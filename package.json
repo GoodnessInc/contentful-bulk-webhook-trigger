@@ -1,6 +1,6 @@
 {
   "name": "@goodness.inc/contentful-bulk-webhook-trigger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Given a Contentful contentType, iterate through each entry and invoke provided webhook with a payload that is similar to Contentful webhooks",
   "repository": "github:GoodnessInc/contentful-bulk-webhook-trigger",
   "homepage": "https://github.com/GoodnessInc/contentful-bulk-webhook-trigger",
