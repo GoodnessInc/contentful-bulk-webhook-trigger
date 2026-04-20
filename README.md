@@ -8,12 +8,22 @@ Given a Contentful contentType, iterate through each entry and invoke provided w
 npx @goodness.inc/contentful-bulk-webhook-trigger
 ```
 
-You'll be prompted for:
+You'll be prompted interactively for any values not provided as arguments:
 
-- Space ID
-- Content Delivery API Access Token
-- Content Type ID
-- Webhook URL
+- Space ID (`--space`)
+- Content Delivery API Access Token (`--access-token`)
+- Content Type ID (`--content-type`)
+- Webhook URL (`--webhook-url`)
+
+To run non-interactively (e.g. in CI), pass all arguments directly:
+
+```sh
+npx @goodness.inc/contentful-bulk-webhook-trigger \
+  --space <spaceId> \
+  --access-token <token> \
+  --content-type <contentTypeId> \
+  --webhook-url <url>
+```
 
 Your webhook will be invoked with a payload like:
 
