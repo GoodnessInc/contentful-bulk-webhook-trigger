@@ -46,7 +46,8 @@ async function askQuestions() {
   // Register all questions as CLI options, then parse argv
   let yargsInstance = yargs(hideBin(process.argv)).help();
   for (const q of QUESTIONS) {
-    yargsInstance = yargsInstance.option(q.key, {
+    const kebabKey = toKebab(q.key);
+    yargsInstance = yargsInstance.option(kebabKey, {
       type: 'string',
       describe: q.message,
     });
@@ -57,7 +58,8 @@ async function askQuestions() {
   // interactively
   const answers: Record<string, string> = {};
   for (const q of QUESTIONS) {
-    const cliValue = argv[q.key];
+    const kebabKey = toKebab(q.key);
+    const cliValue = argv[kebabKey];
     if (cliValue) {
       answers[q.key] = cliValue;
     } else if (q.type === 'password') {
@@ -125,4 +127,9 @@ async function invokeWebhook({
     },
     body: JSON.stringify(payload),
   });
+}
+
+// Convert camelCase to kebab-case
+function toKebab(str: string): string {
+  return str.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 }
