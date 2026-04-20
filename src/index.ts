@@ -1,6 +1,21 @@
 #!/usr/bin/env node
 import {input, password} from '@inquirer/prompts';
 import * as contentful from 'contentful';
+import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers';
+
+// Shared question definitions — single source of truth for CLI args
+// and interactive prompts
+const QUESTIONS = [
+  {key: 'space', message: 'Space ID', type: 'input'} as const,
+  {
+    key: 'accessToken',
+    message: 'Content Delivery API Access Token',
+    type: 'password',
+  } as const,
+  {key: 'contentType', message: 'Content Type ID', type: 'input'} as const,
+  {key: 'webhookUrl', message: 'Webhook URL', type: 'input'} as const,
+];
 
 // Main execution function
 (async () => {
@@ -28,23 +43,31 @@ import * as contentful from 'contentful';
 // Ask all the questions and return the answers as an object
 type Questions = Awaited<ReturnType<typeof askQuestions>>;
 async function askQuestions() {
-  const space = await input({
-    message: `Space ID`,
-    required: true,
-  });
-  const accessToken = await password({
-    message: `Content Delivery API Access Token`,
-    mask: '*',
-  });
-  const contentType = await input({
-    message: `Content Type ID`,
-    required: true,
-  });
-  const webhookUrl = await input({
-    message: `Webhook URL`,
-    required: true,
-  });
-  return {space, accessToken, contentType, webhookUrl};
+  // Register all questions as CLI options, then parse argv
+  let yargsInstance = yargs(hideBin(process.argv)).help();
+  for (const q of QUESTIONS) {
+    yargsInstance = yargsInstance.option(q.key, {
+      type: 'string',
+      describe: q.message,
+    });
+  }
+  const argv = yargsInstance.parseSync() as Record<string, string | undefined>;
+
+  // For each question, use the CLI arg value if provided, else prompt
+  // interactively
+  const answers: Record<string, string> = {};
+  for (const q of QUESTIONS) {
+    const cliValue = argv[q.key];
+    if (cliValue) {
+      answers[q.key] = cliValue;
+    } else if (q.type === 'password') {
+      answers[q.key] = await password({message: q.message, mask: '*'});
+    } else {
+      answers[q.key] = await input({message: q.message, required: true});
+    }
+  }
+
+  return answers as {[K in (typeof QUESTIONS)[number]['key']]: string};
 }
 
 // Get all entries for the given content type at once

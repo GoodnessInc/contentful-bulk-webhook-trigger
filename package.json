@@ -20,10 +20,13 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^8.0.1",
-    "contentful": "^11.9.0"
+    "contentful": "^11.9.0",
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@shopify/prettier-config": "^1.1.4",
+    "@types/node": "^25.6.0",
+    "@types/yargs": "^17.0.35",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"
   },
